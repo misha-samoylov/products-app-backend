@@ -49,4 +49,23 @@ class ProductsController extends AbstractController
         $response = new JsonResponse(['success' => true]);
         return $response;
     }
+
+    public function delete(ManagerRegistry $doctrine, Request $request): Response
+    {
+        $parameters = json_decode($request->getContent(), true);
+        $id = $parameters['id'];
+
+        $product = $doctrine->getRepository(Product::class)->find($id);
+
+        if (!$product) {
+            return new JsonResponse(['success' => false]);
+        }
+
+        $entityManager = $doctrine->getManager();
+        $entityManager->remove($product);
+        $entityManager->flush();
+
+        $response = new JsonResponse(['success' => true]);
+        return $response;
+    }
 }

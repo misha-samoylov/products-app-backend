@@ -1,6 +1,6 @@
 # Allow CORS
 Header always set Access-Control-Allow-Origin *
-Header always set Access-Control-Allow-Methods "GET, POST, OPTIONS"
+Header always set Access-Control-Allow-Methods "GET, POST, OPTIONS, DELETE"
 Header always set Access-Control-Allow-Credentials true
 Header always set Access-Control-Allow-Headers "accept, content-type"
 RewriteCond %{REQUEST_METHOD} OPTIONS
