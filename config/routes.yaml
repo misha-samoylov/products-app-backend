@@ -5,4 +5,9 @@
 products:
   path: /products
   controller: App\Controller\ProductsController::show
-  methods: GET|PUT
+  methods: GET
+
+products_add:
+  path: /products
+  controller: App\Controller\ProductsController::add
+  methods: POST
