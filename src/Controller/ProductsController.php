@@ -11,7 +11,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-// use Symfony\Component\Validator\Validation;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
@@ -31,15 +32,28 @@ class ProductsController extends AbstractController
         return $response;
     }
 
-    public function add(ManagerRegistry $doctrine, Request $request): Response
+    public function add(ManagerRegistry $doctrine, Request $request, ValidatorInterface $validator): Response
     {
         $entityManager = $doctrine->getManager();
 
-        // TODO: Validate request
-
         $parameters = json_decode($request->getContent(), true);
         $name = $parameters['name'];
-        
+
+        // validate a request
+        $input = ['name' => $name];
+
+        $constraints = new Assert\Collection([
+            'name' => [new Assert\Length(['min' => 3]), new Assert\NotBlank],
+        ]);
+
+        $violations = $validator->validate($input, $constraints);
+
+        if (count($violations) > 0) {
+            $response = new JsonResponse(['success' => false]);
+            return $response;
+        }
+
+        // save to db
         $product = new Product();
         $product->setName($name);
 
@@ -50,10 +64,24 @@ class ProductsController extends AbstractController
         return $response;
     }
 
-    public function delete(ManagerRegistry $doctrine, Request $request): Response
+    public function delete(ManagerRegistry $doctrine, Request $request, ValidatorInterface $validator): Response
     {
         $parameters = json_decode($request->getContent(), true);
         $id = $parameters['id'];
+
+        // validate a request
+        $input = ['id' => $id];
+
+        $constraints = new Assert\Collection([
+            'id' => [new Assert\Type('integer'), new Assert\NotBlank],
+        ]);
+
+        $violations = $validator->validate($input, $constraints);
+
+        if (count($violations) > 0) {
+            $response = new JsonResponse(['success' => false]);
+            return $response;
+        }
 
         $product = $doctrine->getRepository(Product::class)->find($id);
 
