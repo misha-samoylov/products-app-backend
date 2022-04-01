@@ -1,0 +1,8 @@
+#index:
+#    path: /
+#    controller: App\Controller\DefaultController::index
+
+products:
+  path: /products
+  controller: App\Controller\ProductsController::show
+  methods: GET|PUT
