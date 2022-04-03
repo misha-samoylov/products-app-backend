@@ -21,8 +21,7 @@ class ProductsController extends AbstractController
 {
     public function show(ProductRepository $productRepository): Response
     {
-        $product = $productRepository
-            ->findAll();
+        $product = $productRepository->findAll();
 
         $normalizers = [new ObjectNormalizer()];
         $serializer = new Serializer($normalizers);
@@ -49,8 +48,7 @@ class ProductsController extends AbstractController
         $violations = $validator->validate($input, $constraints);
 
         if (count($violations) > 0) {
-            $response = new JsonResponse(['success' => false]);
-            return $response;
+            return new JsonResponse(['success' => false]);
         }
 
         // save to db
@@ -60,8 +58,7 @@ class ProductsController extends AbstractController
         $entityManager->persist($product);
         $entityManager->flush();
 
-        $response = new JsonResponse(['success' => true]);
-        return $response;
+        return new JsonResponse(['success' => true]);
     }
 
     public function delete(ManagerRegistry $doctrine, Request $request, ValidatorInterface $validator): Response
@@ -79,10 +76,10 @@ class ProductsController extends AbstractController
         $violations = $validator->validate($input, $constraints);
 
         if (count($violations) > 0) {
-            $response = new JsonResponse(['success' => false]);
-            return $response;
+            return new JsonResponse(['success' => false]);
         }
 
+        // find and remove item
         $product = $doctrine->getRepository(Product::class)->find($id);
 
         if (!$product) {
@@ -93,7 +90,6 @@ class ProductsController extends AbstractController
         $entityManager->remove($product);
         $entityManager->flush();
 
-        $response = new JsonResponse(['success' => true]);
-        return $response;
+        return new JsonResponse(['success' => true]);
     }
 }
